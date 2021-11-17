@@ -15,7 +15,6 @@ STORAGE_LOCATION = 'models/simpletaxifare/model.joblib'
 ##### Data  - - - - - - - - - - - - - - - - - - - - - - - -
 
 # train data file location
-AWS_BUCKET_TRAIN_PATH = "s3://wagon-public-datasets/taxi-fare-train.csv"
 AWS_BUCKET_TEST_PATH = "s3://wagon-public-datasets/taxi-fare-test.csv"
 # /!\ here you need to decide if you are going to train using the provided and uploaded data/train_1k.csv sample file
 # or if you want to use the full dataset (you need need to upload it first of course)

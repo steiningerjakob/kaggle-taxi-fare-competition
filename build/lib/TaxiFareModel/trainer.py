@@ -39,8 +39,8 @@ class Trainer():
                                           self.EXPERIMENT_NAME)  # cf doc above
         self.estimator = kwargs.get("estimator", self.ESTIMATOR)
         self.model_params = None
-        self.memory = kwargs.get("pipeline_memory", None)
         self.n_jobs = kwargs.get('n_jobs', -1)
+        self.memory = self.kwargs.get("pipeline_memory", None)
         self.dist = self.kwargs.get("distance_type", "euclidian")
         self.feateng_steps = self.kwargs.get("feateng",
                                         ["distance", "time_features"])
@@ -91,7 +91,7 @@ class Trainer():
     def set_pipeline(self):
         '''defines the pipeline as a class attribute and returns it'''
         if self.memory:
-            self.memory = mkdtemp()
+            memory = mkdtemp()
 
         # Define feature engineering pipeline blocks here
         pipe_time_features = make_pipeline(
@@ -125,7 +125,7 @@ class Trainer():
 
         self.pipeline = Pipeline(steps=[('features', features_encoder),
                                         ('model', self.get_estimator())],
-                                 memory=self.memory)
+                                 memory=memory)
 
     @simple_time_tracker
     def train(self, X_train, y_train):
@@ -171,6 +171,11 @@ class Trainer():
         print(
             f"uploaded model.joblib to gcp cloud storage under \n => {STORAGE_LOCATION}"
         )
+
+    # get_estimator():
+
+    # gridsearch(): --> as part of pipe
+
 
 
     # mlflow methods (CURRENTLY NOT USED):
@@ -222,6 +227,7 @@ class Trainer():
 if __name__ == '__main__':
     # fetch, clean, optimize data and extract relevant data
     nrows = 10_000  # default
+    data = "local"  # default
     X_train, X_test, y_train, y_test = get_train_test_data()
 
     # train, evaluate and save model, and document on mlflow

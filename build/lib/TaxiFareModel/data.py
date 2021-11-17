@@ -1,21 +1,21 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from TaxiFareModel.params import AWS_BUCKET_TRAIN_PATH
+from TaxiFareModel.params import AWS_BUCKET_TEST_PATH
 
 
-def get_data(nrows=10_000, data=None):
+def get_data(nrows=10_000, data="local"):
     """method to get the test data (or a portion of it) from google cloud bucket
     To predict we can either obtain predictions from train data or from test data"""
     # Add Client() here
-    path = "../raw_data/train.csv"
+    path = "../rawdata/train.csv"  # ⚠️ to test from actual KAGGLE test set for submission
 
     if data == "local":
         df = pd.read_csv(path)
     elif data == "full":
-        df = pd.read_csv(AWS_BUCKET_TRAIN_PATH)
+        df = pd.read_csv(AWS_BUCKET_TEST_PATH)
     else:
-        df = pd.read_csv(AWS_BUCKET_TRAIN_PATH, nrows=nrows)
+        df = pd.read_csv(AWS_BUCKET_TEST_PATH, nrows=nrows)
     return df
 
 
@@ -58,7 +58,7 @@ def df_optimized(df, verbose=True, **kwargs):
     return df
 
 
-def get_train_test_data(nrows=10_000, data=None):
+def get_train_test_data(nrows=10_000, data="s3"):
     df = get_data(nrows=nrows, data=data)
     df = clean_data(df)
     df = df_optimized(df)

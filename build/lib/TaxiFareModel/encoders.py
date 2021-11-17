@@ -1,27 +1,37 @@
 import pandas as pd
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from TaxiFareModel.utils import haversine_vectorized, minkowski_distance
-from TaxiFareModel.params import DIST_ARGS
+from TaxiFareModel.utils import haversine_vectorized
 import pygeohash as gh
 
 # Custom DistanceTransformer
 class DistanceTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self, distance_type="euclidian", **kwargs):
-        self.distance_type = distance_type
-
-    def transform(self, X, y=None):
-        assert isinstance(X, pd.DataFrame)
-        if self.distance_type == "haversine":
-            X["distance"] = haversine_vectorized(X, **DIST_ARGS)
-        if self.distance_type == "euclidian":
-            X["distance"] = minkowski_distance(X, p=2, **DIST_ARGS)
-        if self.distance_type == "manhattan":
-            X["distance"] = minkowski_distance(X, p=1, **DIST_ARGS)
-        return X[["distance"]]
+    """
+        Computes the haversine distance between two GPS points.
+        Returns a copy of the DataFrame X with only one column: 'distance'.
+    """
+    def __init__(self,
+                 start_lat="pickup_latitude",
+                 start_lon="pickup_longitude",
+                 end_lat="dropoff_latitude",
+                 end_lon="dropoff_longitude"):
+        self.start_lat = start_lat
+        self.start_lon = start_lon
+        self.end_lat = end_lat
+        self.end_lon = end_lon
 
     def fit(self, X, y=None):
         return self
+
+    def transform(self, X, y=None):
+        assert isinstance(X, pd.DataFrame)
+        X_ = X.copy()
+        X_["distance"] = haversine_vectorized(X_,
+                                              start_lat=self.start_lat,
+                                              start_lon=self.start_lon,
+                                              end_lat=self.end_lat,
+                                              end_lon=self.end_lon)
+        return X_[['distance']]
 
 
 class AddGeohash(BaseEstimator, TransformerMixin):
